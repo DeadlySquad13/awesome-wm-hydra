@@ -263,9 +263,9 @@ local function start(args)
 
     grabber = awful.keygrabber.run(function(mod, key, event)
         if event == "release" then
-            if key == activation_key then
+            --[[ if key == activation_key then
                 stop()
-            end
+            end ]]
             return
         end
 
@@ -284,22 +284,25 @@ local function start(args)
         --     .. ", key_string: " .. key_string)
 
         local child = current_key_table[key_string]
-        if child then
-            local description = child[1]
-            child = child[2]
-            if type(child) == "function" then
-                local status, err = pcall(child)
-                if not status then
-                    print_error("Error: " .. err)
-                end
-                focused_key = key_string
-                update_ui()
-            else
-                table.insert(breadcrumbs, {key, description})
-                current_key_table = child
-                focused_key = nil
-                update_ui()
+        if not child then
+            stop()
+            return
+        end
+        local description = child[1]
+        child = child[2]
+        if type(child) == "function" then
+            local status, err = pcall(child)
+            if not status then
+                print_error("Error: " .. err)
             end
+            focused_key = key_string
+            update_ui()
+            stop()
+        else
+            table.insert(breadcrumbs, {key, description})
+            current_key_table = child
+            focused_key = nil
+            update_ui()
         end
     end)
 end
