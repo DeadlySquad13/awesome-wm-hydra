@@ -291,13 +291,14 @@ local function start(args)
         local description = child[1]
         child = child[2]
         if type(child) == "function" then
+            focused_key = key_string
+            update_ui()
+            stop()
+
             local status, err = pcall(child)
             if not status then
                 print_error("Error: " .. err)
             end
-            focused_key = key_string
-            update_ui()
-            stop()
         else
             table.insert(breadcrumbs, {key, description})
             current_key_table = child
